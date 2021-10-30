@@ -1,17 +1,32 @@
 import { Button, Card, Col, Container, Row } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import React from "react";
+import { useApi } from "../api/firebaseService";
 
 function ItemPreview(props) {
+  const { uploadCard } = useApi();
+  const sendToFirebase = async () => {
+    const result = await uploadCard(props.cardInfo);
+    console.log("Got the result", result);
+  };
+
+  console.log("CardsObtained", props.cardInfo);
+
   return (
     <Card>
+      <span>Here</span>
       <Card.Img variant="top" src={props.cardInfo.image} />
       <Card.Body>
         <Card.Title>{props.cardInfo.title}</Card.Title>
         <Card.Subtitle>{props.cardInfo.category}</Card.Subtitle>
         <Card.Subtitle>{props.cardInfo.price}</Card.Subtitle>
         <Card.Text>{props.cardInfo.description}</Card.Text>
+        {props.display && (
+          <Button variant="primary" onClick={sendToFirebase}>
+            Submit
+          </Button>
+        )}
       </Card.Body>
     </Card>
   );
@@ -94,7 +109,7 @@ function ItemForm(props) {
             variant="primary"
             type="submit"
           >
-            Submit
+            Preview
           </Button>
         </Col>
         <Col>
@@ -108,6 +123,22 @@ function ItemForm(props) {
 }
 
 function HomeForm() {
+  const { getCards } = useApi();
+
+  const [existingCards, setExistingCards] = useState();
+  const [isLoading, setIsLoading] = useState(true);
+
+  const getExistingCards = async () => {
+    const result = await getCards();
+    setExistingCards(result);
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    setIsLoading(true);
+    getExistingCards();
+  }, []);
+
   const titleInputRef = useRef();
   const priceInputRef = useRef();
   const descriptionInputRef = useRef();
@@ -126,7 +157,7 @@ function HomeForm() {
       <Row>
         {previewReady && (
           <Col>
-            <ItemPreview cardInfo={previewData} />
+            <ItemPreview cardInfo={previewData} display={true} />
           </Col>
         )}
 
@@ -141,6 +172,20 @@ function HomeForm() {
           />
         </Col>
       </Row>
+      {!isLoading && (
+        <Row xs={2} md={4}>
+          {existingCards.map((value, index) => {
+            return (
+              <ItemPreview
+                id="fetchedCards"
+                key={index}
+                cardInfo={value}
+                display={false}
+              />
+            );
+          })}
+        </Row>
+      )}
     </Container>
   );
 }
