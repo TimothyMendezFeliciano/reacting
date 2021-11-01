@@ -11,18 +11,26 @@ function CardFooterContent() {
   return (
     <Row>
       <Col>
-        <Button variant="light" onClick={() => setLikes(likes + 1)}>
+        <Button
+          variant="light"
+          aria-label="loveIcon"
+          onClick={() => setLikes(likes + 1)}
+        >
           <Image src={loveIcon} thumbnail />
         </Button>
       </Col>
       <Col xs={2}>
-        <h1>{likes}</h1>
+        <h1 id="likes">{likes}</h1>
       </Col>
       <Col xs={2}>
-        <h1>{dislikes}</h1>
+        <h1 id="dislikes">{dislikes}</h1>
       </Col>
       <Col>
-        <Button variant="light" onClick={() => setDislikes(dislikes + 1)}>
+        <Button
+          variant="light"
+          aria-label="trashIcon"
+          onClick={() => setDislikes(dislikes + 1)}
+        >
           <Image src={trashIcon} thumbnail />
         </Button>
       </Col>
@@ -40,6 +48,7 @@ function CardContent(props) {
           style={{ height: "200px", width: "200px" }}
           variant="top"
           src={cardInfo.source}
+          aria-label="Axolotl Image"
         />
         <Card.Body>
           <Card.Title>{cardInfo.description}</Card.Title>
